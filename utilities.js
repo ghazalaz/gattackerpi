@@ -63,7 +63,7 @@ function parse(line) {
   
   switch(operator) {
     case '< W' : console.log('WRITE REQ: ' + data ); 
-    			fs.appendFile(dspPath, hexToBinary(data), function(err) {
+    			fs.appendFile(dspPath, data, function(err) {
 			      if(err) {
 			          return console.log(err);
 			      }
