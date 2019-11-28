@@ -8,8 +8,8 @@ var inputData = fs.createReadStream(logFile,'utf8');
 var notificationData = [];
 var writeData = [];
 var readData = [];
-
-//readLines(inputData,parse);
+var dspPath = dumpPath+ '/'+peripheralId+'.dsp';
+readLines(inputData,parse);
 
 function myRand(num){
 	const random = require("random");
@@ -61,6 +61,11 @@ function parse(line) {
   
   switch(operator) {
     case '< W' : console.log('WRITE REQ: ' + data ); 
+    			fs.appendFile(dspPath, data, function(err) {
+			      if(err) {
+			          return console.log(err);
+			      }
+			    })
                 break;
     case '< C' : console.log('WRITE CMD: ' + data ); 
                 break;
