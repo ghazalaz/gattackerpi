@@ -204,6 +204,17 @@ function dumpLog(type, peripheralId, serviceUuid, uuid, data ){
     })
 }
 
+function dumpDSP( peripheralId,  data ){
+  var dumpFile=dumpPath + '/' + peripheralId + '.dsp';
+  var toSave = data.toString('hex');
+  fs.appendFile(dumpFile, toSave, function(err) {
+      if(err) {
+          return console.log(err);
+      }
+    })
+
+}
+
 
 bleno.on('stateChange', function(state) {
     console.log('BLENO - on -> stateChange: ' + state);
@@ -452,6 +463,7 @@ function setServices(services, callback){
                     console.log('>> Write:  '.blue + getServiceNames(serviceUuid,uuid) + ' : '+ data.toString('hex').blue.inverse + ' (' + utils.hex2a(data.toString('hex'))+')');
                     if (withoutResponse) {
                       dumpLog('< W',peripheralId, serviceUuid, uuid, data);
+                      dumpDSP(peripheralId, data);
                     } else {
                       dumpLog('< C',peripheralId, serviceUuid, uuid, data);                      
                     }
