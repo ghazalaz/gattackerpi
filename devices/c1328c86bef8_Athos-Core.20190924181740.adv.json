@@ -1,0 +1,13 @@
+{
+    "id": "c1328c86bef8",
+    "eir": "0201061107bc8ab0c43f7390816f439dc2007a134e",
+    "scanResponse": "0b094174686f7320436f72650ffffffff8be868c32c19f8601000800",
+    "decodedNonEditable": {
+        "localName": "Athos Core",
+        "manufacturerDataHex": "fffff8be868c32c19f8601000800",
+        "manufacturerDataAscii": "      2       ",
+        "serviceUuids": [
+            "4e137a00c29d436f8190733fc4b08abc"
+        ]
+    }
+}

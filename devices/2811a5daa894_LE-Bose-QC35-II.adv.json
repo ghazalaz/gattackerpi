@@ -1,0 +1,14 @@
+{
+    "id": "2811a5daa894",
+    "eir": "0201190503befe03fe10ff010971129bb80729f412661fbc5064020af6",
+    "scanResponse": "10094c452d426f73652051433335204949",
+    "decodedNonEditable": {
+        "localName": "LE-Bose QC35 II",
+        "manufacturerDataHex": "010971129bb80729f412661fbc5064",
+        "manufacturerDataAscii": "  q    )  f  Pd",
+        "serviceUuids": [
+            "febe",
+            "fe03"
+        ]
+    }
+}

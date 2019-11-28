@@ -1,0 +1,13 @@
+{
+    "id": "c92fe6bcdcaf",
+    "eir": "020105020a000303e7fe09ff4eabc92fe6bcdcaf06094235323141",
+    "scanResponse": null,
+    "decodedNonEditable": {
+        "localName": "B521A",
+        "manufacturerDataHex": "4eabc92fe6bcdcaf",
+        "manufacturerDataAscii": "N  /    ",
+        "serviceUuids": [
+            "fee7"
+        ]
+    }
+}

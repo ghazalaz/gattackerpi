@@ -1,0 +1,13 @@
+{
+    "id": "d315cb74dbc4",
+    "eir": "0201060303edfe",
+    "scanResponse": null,
+    "decodedNonEditable": {
+        "localName": "",
+        "manufacturerDataHex": null,
+        "manufacturerDataAscii": null,
+        "serviceUuids": [
+            "feed"
+        ]
+    }
+}

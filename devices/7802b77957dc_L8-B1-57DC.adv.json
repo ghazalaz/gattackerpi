@@ -1,0 +1,18 @@
+{
+    "id": "7802b77957dc",
+    "eir": "0201060d03555445535054ff552222e7fe0b094c382d42312d35374443",
+    "scanResponse": "0319420c09ff08087802b77957dc",
+    "decodedNonEditable": {
+        "localName": "L8-B1-57DC",
+        "manufacturerDataHex": "08087802b77957dc",
+        "manufacturerDataAscii": "  x  yW ",
+        "serviceUuids": [
+            "5455",
+            "5345",
+            "5450",
+            "55ff",
+            "2222",
+            "fee7"
+        ]
+    }
+}

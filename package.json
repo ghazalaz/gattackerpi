@@ -1,0 +1,76 @@
+{
+  "_from": "gattacker",
+  "_id": "gattacker@0.2.1",
+  "_inBundle": false,
+  "_integrity": "sha1-A2ee5LVQ8eTwGmh4/I8bopKcwKI=",
+  "_location": "/gattacker",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "gattacker",
+    "name": "gattacker",
+    "escapedName": "gattacker",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/gattacker/-/gattacker-0.2.1.tgz",
+  "_shasum": "03679ee4b550f1e4f01a6878fc8f1ba2929cc0a2",
+  "_spec": "gattacker",
+  "_where": "/home/pi/gattacker",
+  "author": {
+    "name": "Slawomir Jasek",
+    "email": "slawekj@gmail.com"
+  },
+  "bugs": {
+    "url": "https://github.com/securing/gattacker/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "async": "^2.0.1",
+    "bluetooth-hci-socket": "^0.4.3",
+    "bplist-parser": "^0.0.6",
+    "colors": "^1.1.2",
+    "debug": "^2.2.0",
+    "env2": "^2.1.0",
+    "glob": "^7.0.5",
+    "node-getopt": "^0.2.3",
+    "random": "^2.1.1",
+    "random-js": "^2.1.0",
+    "ws": "^1.1.1"
+  },
+  "deprecated": false,
+  "description": "GATTacker",
+  "homepage": "https://github.com/securing/gattacker#readme",
+  "keywords": [
+    "bluetooth",
+    "BLE",
+    "bluetooth low energy",
+    "bluetooth smart",
+    "MITM",
+    "man in the middle",
+    "debug",
+    "proxy"
+  ],
+  "license": "MIT",
+  "main": "advertise.js",
+  "name": "gattacker",
+  "os": [
+    "linux"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/securing/gattacker.git"
+  },
+  "scripts": {
+    "advertise": "node advertise.js",
+    "scan": "node scan.js",
+    "ws-slave": "node ws-slave.js"
+  },
+  "version": "0.2.1"
+}

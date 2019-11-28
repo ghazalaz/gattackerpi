@@ -1,0 +1,256 @@
+[
+    {
+        "uuid": "1800",
+        "name": "Generic Access",
+        "type": "org.bluetooth.service.generic_access",
+        "startHandle": 1,
+        "endHandle": 7,
+        "characteristics": [
+            {
+                "uuid": "2a00",
+                "name": "Device Name",
+                "properties": [
+                    "read",
+                    "write"
+                ],
+                "value": "4174686f7320436f7265",
+                "descriptors": [],
+                "startHandle": 2,
+                "valueHandle": 3,
+                "asciiValue": "Athos Core"
+            },
+            {
+                "uuid": "2a01",
+                "name": "Appearance",
+                "properties": [
+                    "read"
+                ],
+                "value": "4103",
+                "descriptors": [],
+                "startHandle": 4,
+                "valueHandle": 5,
+                "asciiValue": "A "
+            },
+            {
+                "uuid": "2a04",
+                "name": "Peripheral Preferred Connection Parameters",
+                "properties": [
+                    "read"
+                ],
+                "value": "0600280000009001",
+                "descriptors": [],
+                "startHandle": 6,
+                "valueHandle": 7,
+                "asciiValue": "  (     "
+            }
+        ]
+    },
+    {
+        "uuid": "1801",
+        "name": "Generic Attribute",
+        "type": "org.bluetooth.service.generic_attribute",
+        "startHandle": 8,
+        "endHandle": 11,
+        "characteristics": [
+            {
+                "uuid": "2a05",
+                "name": "Service Changed",
+                "properties": [
+                    "indicate"
+                ],
+                "value": "",
+                "descriptors": [
+                    {
+                        "handle": 11,
+                        "uuid": "2902",
+                        "value": ""
+                    }
+                ],
+                "startHandle": 9,
+                "valueHandle": 10
+            }
+        ]
+    },
+    {
+        "uuid": "180f",
+        "name": "Battery Service",
+        "type": "org.bluetooth.service.battery_service",
+        "startHandle": 12,
+        "endHandle": 15,
+        "characteristics": [
+            {
+                "uuid": "2a19",
+                "name": "Battery Level",
+                "properties": [
+                    "read",
+                    "notify"
+                ],
+                "value": "64",
+                "descriptors": [
+                    {
+                        "handle": 15,
+                        "uuid": "2902",
+                        "value": ""
+                    }
+                ],
+                "startHandle": 13,
+                "valueHandle": 14,
+                "asciiValue": "d"
+            }
+        ]
+    },
+    {
+        "uuid": "180a",
+        "name": "Device Information",
+        "type": "org.bluetooth.service.device_information",
+        "startHandle": 16,
+        "endHandle": 24,
+        "characteristics": [
+            {
+                "uuid": "2a29",
+                "name": "Manufacturer Name String",
+                "properties": [
+                    "read"
+                ],
+                "value": "4174686f73",
+                "descriptors": [],
+                "startHandle": 17,
+                "valueHandle": 18,
+                "asciiValue": "Athos"
+            },
+            {
+                "uuid": "2a25",
+                "name": "Serial Number String",
+                "properties": [
+                    "read"
+                ],
+                "value": "4143323533383230304e5a",
+                "descriptors": [],
+                "startHandle": 19,
+                "valueHandle": 20,
+                "asciiValue": "AC2538200NZ"
+            },
+            {
+                "uuid": "2a26",
+                "name": "Firmware Revision String",
+                "properties": [
+                    "read"
+                ],
+                "value": "424c452076302e392e39",
+                "descriptors": [],
+                "startHandle": 21,
+                "valueHandle": 22,
+                "asciiValue": "BLE v0.9.9"
+            },
+            {
+                "uuid": "2a28",
+                "name": "Software Revision String",
+                "properties": [
+                    "read"
+                ],
+                "value": "4453502076302e382e31",
+                "descriptors": [],
+                "startHandle": 23,
+                "valueHandle": 24,
+                "asciiValue": "DSP v0.8.1"
+            }
+        ]
+    },
+    {
+        "uuid": "4e137a00c29d436f8190733fc4b08abc",
+        "name": null,
+        "type": null,
+        "startHandle": 25,
+        "endHandle": 65535,
+        "characteristics": [
+            {
+                "uuid": "4e137a01c29d436f8190733fc4b08abc",
+                "name": null,
+                "properties": [
+                    "read",
+                    "write",
+                    "notify"
+                ],
+                "staticValue": "c9000420",
+                "descriptors": [
+                    {
+                        "handle": 28,
+                        "uuid": "2902",
+                        "value": ""
+                    }
+                ],
+                "startHandle": 26,
+                "valueHandle": 27,
+                "asciiValue": "    ",
+		"hooks":{
+			"dynamicRead":"athosNotify",
+			"dynamicWrite":"",
+			"dynamicNotify":"replayNotify
+"
+		}
+            },
+            {
+                "uuid": "4e137a02c29d436f8190733fc4b08abc",
+                "name": null,
+                "properties": [
+                    "notify"
+                ],
+                "value": "",
+                "descriptors": [
+                    {
+                        "handle": 31,
+                        "uuid": "2902",
+                        "value": ""
+                    }
+                ],
+                "startHandle": 29,
+                "valueHandle": 30
+            },
+            {
+                "uuid": "4e137a03c29d436f8190733fc4b08abc",
+                "name": null,
+                "properties": [
+                    "notify"
+                ],
+                "value": "",
+                "descriptors": [
+                    {
+                        "handle": 34,
+                        "uuid": "2902",
+                        "value": ""
+                    }
+                ],
+                "startHandle": 32,
+                "valueHandle": 33
+            },
+            {
+                "uuid": "4e137a04c29d436f8190733fc4b08abc",
+                "name": null,
+                "properties": [
+                    "notify"
+                ],
+                "value": "",
+                "descriptors": [
+                    {
+                        "handle": 37,
+                        "uuid": "2902",
+                        "value": ""
+                    }
+                ],
+                "startHandle": 35,
+                "valueHandle": 36
+            },
+            {
+                "uuid": "4e137a05c29d436f8190733fc4b08abc",
+                "name": null,
+                "properties": [
+                    "writeWithoutResponse"
+                ],
+                "value": "",
+                "descriptors": [],
+                "startHandle": 38,
+                "valueHandle": 39
+            }
+        ]
+    }
+]

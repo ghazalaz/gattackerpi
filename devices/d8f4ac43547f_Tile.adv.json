@@ -1,0 +1,13 @@
+{
+    "id": "d8f4ac43547f",
+    "eir": "0201060303edfe",
+    "scanResponse": "050954696c65",
+    "decodedNonEditable": {
+        "localName": "Tile",
+        "manufacturerDataHex": null,
+        "manufacturerDataAscii": null,
+        "serviceUuids": [
+            "feed"
+        ]
+    }
+}

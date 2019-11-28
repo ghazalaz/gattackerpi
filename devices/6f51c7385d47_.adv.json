@@ -1,0 +1,11 @@
+{
+    "id": "6f51c7385d47",
+    "eir": "02011a0aff4c001005011c5b4f25",
+    "scanResponse": null,
+    "decodedNonEditable": {
+        "localName": "",
+        "manufacturerDataHex": "4c001005011c5b4f25",
+        "manufacturerDataAscii": "L     [O%",
+        "serviceUuids": []
+    }
+}
