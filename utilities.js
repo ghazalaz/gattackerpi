@@ -9,6 +9,8 @@ var notificationData = [];
 var writeData = [];
 var readData = [];
 var dspPath = dumpPath+ '/'+peripheralId+'.dsp';
+hexToBinary = require('hex-to-binary');
+
 readLines(inputData,parse);
 
 function myRand(num){
@@ -61,7 +63,7 @@ function parse(line) {
   
   switch(operator) {
     case '< W' : console.log('WRITE REQ: ' + data ); 
-    			fs.appendFile(dspPath, data, function(err) {
+    			fs.appendFile(dspPath, hexToBinary(data), function(err) {
 			      if(err) {
 			          return console.log(err);
 			      }
