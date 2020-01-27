@@ -137,9 +137,12 @@ function replayNotify(peripheralId, service, characteristic, type, data, wsclien
 
 function dynamicNotify(peripheralId, service, characteristic, type, data, wsclient, callback){
 	datastr = data.toString('hex');
-	//datastr = datastr.replaceAt(6,myRand(15));
-	//datastr = datastr.replaceAt(7,myRand(15));
-	//datastr = datastr.replaceAt(8,myRand(15));
+	if (datastr.length == 20){
+		console.log("	Dynamic Notify Length 20".yellow);
+		datastr = datastr.replaceAt(2,myRand(15));
+		datastr = datastr.replaceAt(3,myRand(15));
+		datastr = datastr.replaceAt(4,myRand(15));
+	}
 	callback(null, new Buffer(datastr,'hex'));
 
 }

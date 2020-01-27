@@ -11,7 +11,7 @@ var readData = [];
 var dspPath = dumpPath+ '/'+peripheralId+'.dsp';
 hexToBinary = require('hex-to-binary');
 
-readLines(inputData,parse);
+//readLines(inputData,parse);
 
 function myRand(num){
 	const random = require("random");

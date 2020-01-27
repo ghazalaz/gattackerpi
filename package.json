@@ -39,6 +39,7 @@
     "debug": "^2.2.0",
     "env2": "^2.1.0",
     "glob": "^7.0.5",
+    "hex-to-binary": "^1.0.1",
     "node-getopt": "^0.2.3",
     "random": "^2.1.1",
     "random-js": "^2.1.0",
