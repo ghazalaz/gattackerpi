@@ -20,7 +20,7 @@ function myRand(num){
 }
 
 
-function readLines(input, func) {
+function logToJson(input, func, peripheralId) {
   var remaining = '';
 
   input.on('data', function(data) {
@@ -83,3 +83,5 @@ function parse(line) {
 
 
 module.exports.myRand = myRand;
+module.exports.logToJson = logToJson;
+module.exports.parse = parse;
