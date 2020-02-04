@@ -1,10 +1,11 @@
 require('env2')('config.env');
 
+//var Diff = require('diff');
 var fs = require('fs');
 var peripheralId = "c1328c86bef8"
 var dumpPath=process.env.DUMP_PATH;
-var logFile = dumpPath+ '/'+peripheralId+'.log';
-var inputData = fs.createReadStream(logFile,'utf8');
+//var logFile = dumpPath+ '/'+peripheralId+'.log';
+//var inputData = fs.createReadStream(logFile,'utf8');
 var notificationData = [];
 var writeData = [];
 var readData = [];
@@ -66,7 +67,8 @@ function parse(line) {
     			fs.appendFile(dspPath, data, function(err) {
 			      if(err) {
 			          return console.log(err);
-			      }
+			      }    
+
 			    })
                 break;
     case '< C' : console.log('WRITE CMD: ' + data ); 
@@ -81,7 +83,66 @@ function parse(line) {
 
 }
 
+function match_pattern(str, patterns){
+    var max_match = 0;
+    var matched_pattern = "";
+    var second_max = 0;
+    var second_matched = "";
+
+    patterns.forEach( pattern => {
+      var tmp_match = 0;
+      if (pattern.length <= str.length){
+        for (var i=0; i<pattern.length; i++){
+          if (pattern[i] == str[i]){
+              tmp_match ++;
+          }
+        }
+      if(tmp_match > max_match){
+          second_matched = matched_pattern;
+          second_max = max_match;
+
+          matched_pattern = pattern;
+          max_match = tmp_match;
+        }
+      }
+    });
+    return ((matched_pattern == 0)? str:matched_pattern);
+    //return ((second_matched == 0)? str:second_matched);
+}
+
+function replace(str,old_chr,new_chr){
+  return str.replace(old_chr,new_chr);
+}
+
+function isCertainData(peripheralId,datastr){
+  certain_data = fs.readFileSync("devices/config/"+peripheralId+".conf").toString().replace(/(^[ \t]*\n)/gm,"").split('\n');
+  if (certain_data.includes(datastr)){
+    return true;
+  }else{
+    return false;
+  }
+
+}
+
+const readline = require('readline');
+
+function newData(query){
+  const r1 = readline.createInterface({
+      input : process.stdin,
+      output : process.stdout,
+  });
+  return new Promise(resolve => r1.question(query, ans => {
+      r1.close();
+      resolve(ans);
+  }));
+}
+
+
 
 module.exports.myRand = myRand;
 module.exports.logToJson = logToJson;
 module.exports.parse = parse;
+module.exports.match_pattern = match_pattern; 
+module.exports.replace = replace;
+module.exports.isCertainData = isCertainData;
+module.exports.newData = newData;

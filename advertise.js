@@ -184,8 +184,10 @@ function getDateTime() {
 //dump transmission log to file
 function dumpLog(type, peripheralId, serviceUuid, uuid, data ){
 
-    var dumpFile=dumpPath + '/' + peripheralId + '.log';
-
+    var dumpFile = dumpPath + '/' + peripheralId + '.log';
+    var notifyFile = dumpPath + '/' + peripheralId + '.notify.log';
+    var writeRecFile = dumpPath + '/' + peripheralId + '.write_rec.log';
+    
     if (servicesLookup[serviceUuid]) {
       var serviceName = servicesLookup[serviceUuid].name;
       var characteristicName = servicesLookup[serviceUuid].characteristics[uuid].name;      
@@ -202,6 +204,21 @@ function dumpLog(type, peripheralId, serviceUuid, uuid, data ){
           return console.log(err);
       }
     })
+    if (type == "> N"){
+      fs.appendFile(notifyFile, data.toString('hex')+'\n', function(err) {
+      if(err) {
+          return console.log(err);
+        }
+      })  
+    }
+    if (type == "< W"){
+      fs.appendFile(writeRecFile, data.toString('hex')+'\n', function(err) {
+      if(err) {
+          return console.log(err);
+        }
+      })  
+    }
+    
 }
 
 function dumpDSP( peripheralId,  data ){
@@ -312,7 +329,8 @@ wsclient.on('notification', function(peripheralId, serviceUuid, uuid, data) {
           var data = hook.staticValue;
           console.log('<< Notify static val: '.green + data.toString('hex').green.inverse + ' (' + utils.hex2a(data.toString('hex'))+ ')');
           //return the static value
-          callback(result, new Buffer(data,'hex'));
+          //callback(result, new Buffer(data,'hex'));
+          subscriptions[serviceUuid][uuid](data);
         } else if (hook.dynamicNotify) {
           hookFunctions[hook.dynamicNotify](peripheralId, serviceUuid, uuid, 'notify', data , wsclient, function(err, modifiedData){
             if (modifiedData) {
@@ -366,7 +384,7 @@ function setServices(services, callback){
         };
 
 
-        debug("   Setting up Characteristic: " + characteristicToCopy.uuid + ' Value: ' + characteristicToCopy.value + ' ('+utils.hex2a(characteristicToCopy.value)+')');
+        console.log("   Setting up Characteristic: " + characteristicToCopy.uuid + ' Value: ' + characteristicToCopy.value + ' ('+utils.hex2a(characteristicToCopy.value)+')');
         debug("    StartHandle: " + characteristicToCopy.startHandle);
         debug("    ValueHandle: " + characteristicToCopy.valueHandle);
         debug("    Properties: " + characteristicToCopy.properties);
@@ -407,7 +425,7 @@ function setServices(services, callback){
 
                     var info = getServiceNames(serviceUuid, uuid);
 
-                    debug('<< Read req : '.green + this.serviceUuid +' -> ' + this.uuid  + ' offset: ' + offset)
+                    console.log('<< Read req : '.green + this.serviceUuid +' -> ' + this.uuid  + ' offset: ' + offset)
 
                     //we assume the original device read success
                     //todo? - forward possible error to client
@@ -559,13 +577,13 @@ function setServices(services, callback){
 
               },
           onUnsubscribe: function() { // optional notify/indicate unsubscribe handler, function() { ...}
-              //  console.log('========== onUnsubscribe');
+                console.log('========== onUnsubscribe');
           }, 
           onNotify: function() {// optional notify sent handler, function() { ...}
-               // console.log('========== onNotify');
+                console.log('========== onNotify');
           }, 
           onIndicate: function(updateValueCallback) { // optional indicate confirmation received handler, function() { ...}
-                // console.log('========== onIndicate');
+                 console.log('========== onIndicate');
 
           }
       });
@@ -583,12 +601,10 @@ function setServices(services, callback){
         type: serviceToCopy.type,
         characteristics: mitmcharacteristics
     });
-
       mitmservices.push(primaryService);
 
       servicesLookup[serviceToCopy.uuid].name = serviceToCopy.name;
       servicesLookup[serviceToCopy.uuid].type = serviceToCopy.type;
-
   }
 
   callback(mitmservices);

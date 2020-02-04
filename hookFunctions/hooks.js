@@ -3,7 +3,7 @@ utilities = require('../utilities');
 var fs = require('fs');
 var colors = require('colors');
 var utils = require('../lib/utils');
-var dumpPath=process.env.DUMP_PATH;
+var dumpPath = process.env.DUMP_PATH;
 
 var actNotify = false;
 var actWrite = '';
@@ -85,8 +85,6 @@ function posWriteHacked(peripheralId, service, characteristic, type, data, wscli
 }
 
 
-
-
 function posWriteBH(peripheralId, service, characteristic, type, data, wsclient, callback){
 	datastr = data.toString('hex');
 	if (actWrite === 'displayswitch') {
@@ -122,10 +120,10 @@ function staticNotify(peripheralId, service,characteristic,type,data, wsclient,c
 	}
 }
 
-function replayNotify(peripheralId, service, characteristic, type, data, wsclient, callback){
+function replayAthosNotify(peripheralId, service, characteristic, type, data, wsclient, callback){
 	var notifyData = JSON.parse(fs.readFileSync(dumpPath+"/"+peripheralId.toString().toLowerCase()+".notify.json", 'utf8'));
 	datastr = data.toString('hex');
-	console.log("	Dynamic Notify".yellow);
+	console.log("Dynamic Notify".yellow);
 	tempstr = notifyData[notify_cnt].replaceAt(4,'F');
 	tempstr = tempstr.replaceAt(5,'F');
 	callback(null,new Buffer(tempstr,'hex'));
@@ -151,7 +149,84 @@ function dynamicRead(peripheralId, service, characteristic, type, data, wsclient
 	datastr = data.toString("hex");
 	callback(null,new Buffer(datastr,'hex'));
 }
+
+// For Purifit Smart Watch to downgrade version
+function downgrade(peripheralId, service, characteristic, type, data, wsclient, callback){
+	datastr = data.toString("hex");
+	if (datastr.substring(0,12) == "42542b564552"){
+		console.log(" Notifying Version\n");
+		datastr = "42542b5645523a3130302e3034332e3031380d0a"; // "BT+VER:000.043.018"
+	}
+	callback(null, new Buffer(datastr,'hex'));
+}
+// For Purifit Smart Watch to tamper battery level
+function battery(peripheralId, service, characteristic, type, data, wsclient, callback){
+	datastr = data.toString("hex");
+	if (datastr.substring(0,14) == "41542b42415454"){
+		console.log(" Notifying Version\n");
+		//datastr = "41542b424154543a3130300d0a"; // "BT+BATT:100"
+		//datastr = "41542b424154543a2d393939";
+		for (var i=0; i<=100; i++){
+			Buffer.from(i.toString(),'utf-8')
+			datastr = "41542b424154543a"+ Buffer.from(i.toString(),'utf-8').toString('hex')+"0d0a";
+			console.log(datastr);
+			callback(null, new Buffer(datastr,'hex'));
+		}
+	}
+
+	callback(null, new Buffer(datastr,'hex'));
+}
+
+function replayNotify(peripheralId, service, characteristic, type, data, wsclient, callback){
+	var notifyData = JSON.parse(fs.readFileSync(dumpPath+"/"+peripheralId.toString().toLowerCase()+".notify.json", 'utf8'));
+	//datastr = data.toString('hex');
+	callback(null,new Buffer(notifyData[notify_cnt],'hex'));
+	notify_cnt = notify_cnt + 1;
+	if (notify_cnt > notifyData.length){
+		notify_cnt = 0;
+	}
+}
+
+function staticNotifyValue(peripheralId, service, characteristic, type, data, wsclient, callback){
+	datastr = data.toString('hex');
+	if ( utilities.isCertainData(peripheralId,datastr) ){
+		callback(null,new Buffer(datastr,'hex'));
+		return;
+	}
+	datastr = new Array(datastr.length + 1).join("0").toString('hex')
+	callback(null,new Buffer(datastr,'hex'));
+}
+
+function fuzzedData(peripheralId, service, characteristic, type, data, wsclient, callback){
+	datastr = data.toString('hex');
+	if ( utilities.isCertainData(peripheralId,datastr) ){
+		callback(null,new Buffer(datastr,'hex'));
+		return;
+	}
+	patterns = fs.readFileSync("dump/"+peripheralId+".pattern").toString().replace(/(^[ \t]*\n)/gm,"").split('\n');
+	matched = utilities.match_pattern(datastr,patterns);
+	console.log("Matched : "+matched);
+	callback(null, new Buffer(matched.split('-').join('0'),'hex'));
+	callback(null, new Buffer(matched.split('-').join('1'),'hex'));
+	callback(null, new Buffer(matched.split('-').join('F'),'hex'));
+}
+
+function AllF(peripheralId, service, characteristic, type, data, wsclient, callback){
+	datastr = data.toString('hex');
+	if ( utilities.isCertainData(peripheralId,datastr) ){
+		callback(null,new Buffer(datastr,'hex'));
+		return;
+	}
+	datastr = new Array(datastr.length*1 + 1).join("F").toString('hex')
+	callback(null,new Buffer(datastr,'hex'));
+}
+
 module.exports.staticNotify = staticNotify;
 module.exports.replayNotify = replayNotify;
 module.exports.dynamicNotify = dynamicNotify;
 module.exports.dynamicRead = dynamicRead;
+module.exports.downgrade = downgrade;
+module.exports.battery = battery;
+module.exports.staticNotifyValue = staticNotifyValue;
+module.exports.fuzzedData = fuzzedData;
+module.exports.AllF = AllF;

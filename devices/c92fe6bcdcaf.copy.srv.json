@@ -1,0 +1,145 @@
+[
+    {
+        "uuid": "1800",
+        "name": "Generic Access",
+        "type": "org.bluetooth.service.generic_access",
+        "startHandle": 1,
+        "endHandle": 7,
+        "characteristics": []
+    },
+    {
+        "uuid": "1801",
+        "name": "Generic Attribute",
+        "type": "org.bluetooth.service.generic_attribute",
+        "startHandle": 8,
+        "endHandle": 8,
+        "characteristics": [
+            {
+                "uuid": "2a00",
+                "name": "Device Name",
+                "properties": [
+                    "read",
+                    "write"
+                ],
+		"staticValue":"4235323141",
+                "descriptors": [],
+                "startHandle": 2,
+                "valueHandle": 3,
+                "asciiValue": "B521A",
+		"hooks":{
+	                "staticValue": "4235323141"
+		}
+            },
+            {
+                "uuid": "2a01",
+                "name": "Appearance",
+                "properties": [
+                    "read"
+                ],
+                "value": "0000",
+                "descriptors": [],
+                "startHandle": 4,
+                "valueHandle": 5,
+                "asciiValue": "  "
+            },
+            {
+                "uuid": "2a04",
+                "name": "Peripheral Preferred Connection Parameters",
+                "properties": [
+                    "read"
+                ],
+                "value": "5000a00000009001",
+                "descriptors": [
+                    {
+                        "handle": 8,
+                        "uuid": "2800",
+                        "value": ""
+                    }
+                ],
+                "startHandle": 6,
+                "valueHandle": 7,
+                "asciiValue": "P       "
+            }
+        ]
+    },
+    {
+        "uuid": "190a",
+        "name": null,
+        "type": null,
+        "startHandle": 9,
+        "endHandle": 14,
+        "characteristics": [
+            {
+                "uuid": "0002",
+                "name": null,
+                "properties": [
+                    "notify"
+                ],
+                "value": "",
+                "descriptors": [
+                    {
+                        "handle": 12,
+                        "uuid": "2902",
+                        "value": ""
+                    }
+                ],
+                "startHandle": 10,
+                "valueHandle": 11,
+		"hooks":{
+			"dynamicNotify":"fuzzedData"
+		}
+            },
+            {
+                "uuid": "0001",
+                "name": null,
+                "properties": [
+                    "writeWithoutResponse",
+                    "write"
+                ],
+                "value": "",
+                "descriptors": [],
+                "startHandle": 13,
+                "valueHandle": 14
+            }
+        ]
+    },
+    {
+        "uuid": "190b",
+        "name": null,
+        "type": null,
+        "startHandle": 15,
+        "endHandle": 65535,
+        "characteristics": [
+            {
+                "uuid": "0004",
+                "name": null,
+                "properties": [
+                    "notify"
+                ],
+                "value": "",
+                "descriptors": [
+                    {
+                        "handle": 18,
+                        "uuid": "2902",
+                        "value": ""
+                    }
+                ],
+                "startHandle": 16,
+                "valueHandle": 17
+            },
+            {
+                "uuid": "0003",
+                "name": null,
+                "properties": [
+                    "writeWithoutResponse",
+                    "write"
+                ],
+                "value": "",
+                "descriptors": [],
+                "startHandle": 19,
+                "valueHandle": 20
+            }
+        ]
+    }
+
+]
