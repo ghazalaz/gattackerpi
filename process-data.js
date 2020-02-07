@@ -17,4 +17,7 @@ var dumpPath = process.env.DUMP_PATH;
 var logFile = dumpPath+ '/'+peripheralId+'.log';
 var inputData = fs.createReadStream(logFile,'utf8');
 
-utilities.logToJson(inputData, utilities.parse, peripheralId)
+//utilities.logToJson(inputData, utilities.parse, peripheralId)
+utilities.generateWriteResponsePair(logFile,peripheralId);
+var wrpair = dumpPath+'/'+peripheralId+'.write-response-pair.json';
+utilities.loadWriteResponsePair(wrpair);

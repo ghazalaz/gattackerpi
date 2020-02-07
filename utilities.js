@@ -2,6 +2,9 @@ require('env2')('config.env');
 
 //var Diff = require('diff');
 var fs = require('fs');
+var util = require('util');
+//const readline = require('readline');
+
 var peripheralId = "c1328c86bef8"
 var dumpPath=process.env.DUMP_PATH;
 //var logFile = dumpPath+ '/'+peripheralId+'.log';
@@ -11,7 +14,7 @@ var writeData = [];
 var readData = [];
 var dspPath = dumpPath+ '/'+peripheralId+'.dsp';
 hexToBinary = require('hex-to-binary');
-
+var writeResponsePair = {}
 //readLines(inputData,parse);
 
 function myRand(num){
@@ -126,7 +129,7 @@ function isCertainData(peripheralId,datastr){
 
 const readline = require('readline');
 
-function newData(query){
+/*function newData(query){
   const r1 = readline.createInterface({
       input : process.stdin,
       output : process.stdout,
@@ -136,7 +139,90 @@ function newData(query){
       resolve(ans);
   }));
 }
+*/
 
+// Generates a dictionary of `write data value` : `Set of {Notification data values until next write}`
+function generateWriteResponsePair(logFile,peripheralId){
+  var lastWrite = ''
+  // var writeResponsePair = {}
+  // var readInterface = readline.createInterface({
+  //   input : fs.createReadStream(logFile),
+  // })
+  // readInterface.on('line',function(line){
+  //   //console.log(line);
+  //   var arr=line.split('|');
+  //   var operator = arr[1].trim();
+  //   var serviceUuid = arr[2].trim().split(' ')[0]; //split(' ') to remove optional description
+  //   var uuid = arr[3].trim().split(' ')[0];
+  //   var data = arr[4].trim().split(' ')[0];
+  //   if(operator == '< W'){
+  //     //console.log(dict[lastWrite]);
+  //     lastWrite = data;
+  //     if (!writeResponsePair[lastWrite])
+  //       writeResponsePair[lastWrite] = new Set()
+  //   }
+  //   if(operator == '> N'){
+  //     writeResponsePair[lastWrite].add(data);
+  //   }
+  //   return writeResponsePair;
+  //   });
+  // console.log(readInterface);
+  // console.log(writeResponsePair);
+  // return writeResponsePair;
+  var remaining = '';
+  input = fs.createReadStream(logFile,'utf8');
+  input.on('data', function(data) {
+    remaining += data;
+    var index = remaining.indexOf('\n');
+    var last  = 0;
+    while (index > -1) {
+      var line = remaining.substring(last, index);
+      last = index + 1;
+      var arr=line.split('|');
+      var operator = arr[1].trim();
+      var serviceUuid = arr[2].trim().split(' ')[0]; //split(' ') to remove optional description
+      var uuid = arr[3].trim().split(' ')[0];
+      var data = arr[4].trim().split(' ')[0];
+      if(operator == '< W'){
+        //console.log(dict[lastWrite]);
+        lastWrite = data;
+        if (!writeResponsePair[lastWrite])
+          writeResponsePair[lastWrite] = new Set()
+      }
+      if(operator == '> N'){
+        writeResponsePair[lastWrite].add(data);
+      }
+      index = remaining.indexOf('\n', last);
+    }
+
+    remaining = remaining.substring(last);
+
+    fs.writeFile(dumpPath+'/'+peripheralId+'.write-response-pair.json',util.inspect(writeResponsePair),'utf-8',
+        function (err) {
+            if (err) {
+                console.error('Crap happens');
+            }
+        }
+    );
+  });
+
+  input.on('end', function() {
+    if (remaining.length > 0) {
+      func(remaining);
+    }
+  });
+}
+
+function loadWriteResponsePair(logFile){
+  input = fs.createReadStream(logFile,'utf8');
+  var remaining = '';
+  input.on('data', function(data) {
+    console.log(typeof(data));
+    dict = util.inspect(data);
+    console.log(typeof(dict));
+    console.log(dict);
+  });
+}
 
 
 module.exports.myRand = myRand;
@@ -145,4 +231,5 @@ module.exports.parse = parse;
 module.exports.match_pattern = match_pattern; 
 module.exports.replace = replace;
 module.exports.isCertainData = isCertainData;
-module.exports.newData = newData;
+module.exports.generateWriteResponsePair = generateWriteResponsePair;
+module.exports.loadWriteResponsePair = loadWriteResponsePair;
