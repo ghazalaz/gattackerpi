@@ -66,7 +66,8 @@ function parse(line) {
 
   
   switch(operator) {
-    case '< W' : console.log('WRITE REQ: ' + data ); 
+    case '< W' :
+          //console.log('WRITE REQ: ' + data ); 
     			fs.appendFile(dspPath, data, function(err) {
 			      if(err) {
 			          return console.log(err);
@@ -84,6 +85,38 @@ function parse(line) {
                 break;
   }
 
+}
+
+function best_match(str, lst){
+  var max_match = 0;
+  result = str;
+  lst.forEach(str2 => {
+    len = str.length;
+    if (str2.length < len) 
+      len = str2.len;
+    tmp = 0;
+    for (var i = 0; i < len; i ++){
+      if (str[i] == str2[i]){
+        tmp += 1
+      }
+      else{
+        break;
+      }
+    }
+    // i = 0;
+    // while(str[i] == str2[i]){
+    //   i++;
+    //   tmp++;
+    //   if (i == len)
+    //     break;
+    // }
+    if (tmp > max_match){
+      max_match = tmp;
+      result = str2;
+      console.log(result);
+    }
+  });
+  return result;
 }
 
 function match_pattern(str, patterns){
@@ -119,57 +152,30 @@ function replace(str,old_chr,new_chr){
 
 function isCertainData(peripheralId,datastr){
   certain_data = fs.readFileSync("devices/config/"+peripheralId+".conf").toString().replace(/(^[ \t]*\n)/gm,"").split('\n');
-  if (certain_data.includes(datastr)){
-    return true;
-  }else{
-    return false;
+  for(i in certain_data){
+    line = certain_data[i];
+    if (line){
+      line = line.split(',');
+      len = line[0];
+      data = line[1];
+      if( JSON.stringify(datastr.substring(0,len)) == JSON.stringify(data) ){
+        return true;
+      }  
+    }
   }
+  return false;
 
 }
 
 const readline = require('readline');
 
-/*function newData(query){
-  const r1 = readline.createInterface({
-      input : process.stdin,
-      output : process.stdout,
-  });
-  return new Promise(resolve => r1.question(query, ans => {
-      r1.close();
-      resolve(ans);
-  }));
-}
-*/
 
 // Generates a dictionary of `write data value` : `Set of {Notification data values until next write}`
-function generateWriteResponsePair(logFile,peripheralId){
-  var lastWrite = ''
-  // var writeResponsePair = {}
-  // var readInterface = readline.createInterface({
-  //   input : fs.createReadStream(logFile),
-  // })
-  // readInterface.on('line',function(line){
-  //   //console.log(line);
-  //   var arr=line.split('|');
-  //   var operator = arr[1].trim();
-  //   var serviceUuid = arr[2].trim().split(' ')[0]; //split(' ') to remove optional description
-  //   var uuid = arr[3].trim().split(' ')[0];
-  //   var data = arr[4].trim().split(' ')[0];
-  //   if(operator == '< W'){
-  //     //console.log(dict[lastWrite]);
-  //     lastWrite = data;
-  //     if (!writeResponsePair[lastWrite])
-  //       writeResponsePair[lastWrite] = new Set()
-  //   }
-  //   if(operator == '> N'){
-  //     writeResponsePair[lastWrite].add(data);
-  //   }
-  //   return writeResponsePair;
-  //   });
-  // console.log(readInterface);
-  // console.log(writeResponsePair);
-  // return writeResponsePair;
+function generateWriteResponsePair(logFile){
+  var lastWrite = '';
+  var lastWriteSuuid = 0;
   var remaining = '';
+  dict = {}
   input = fs.createReadStream(logFile,'utf8');
   input.on('data', function(data) {
     remaining += data;
@@ -183,47 +189,71 @@ function generateWriteResponsePair(logFile,peripheralId){
       var serviceUuid = arr[2].trim().split(' ')[0]; //split(' ') to remove optional description
       var uuid = arr[3].trim().split(' ')[0];
       var data = arr[4].trim().split(' ')[0];
-      if(operator == '< W'){
-        //console.log(dict[lastWrite]);
+      if(operator == '< W' || operator == '< C'){
         lastWrite = data;
-        if (!writeResponsePair[lastWrite])
-          writeResponsePair[lastWrite] = new Set()
+        lastWriteSuuid = serviceUuid;
+        if (!dict[lastWrite])
+          dict[lastWrite] = {}
       }
       if(operator == '> N'){
-        writeResponsePair[lastWrite].add(data);
+        if(serviceUuid == lastWriteSuuid){
+          if(!dict[lastWrite][uuid]){
+            dict[lastWrite][uuid] = new Set();
+          }
+          dict[lastWrite][uuid].add(data);
+          //console.log(dict[lastWrite]);
+        }
+
       }
       index = remaining.indexOf('\n', last);
     }
 
     remaining = remaining.substring(last);
+  });
 
-    fs.writeFile(dumpPath+'/'+peripheralId+'.write-response-pair.json',util.inspect(writeResponsePair),'utf-8',
+  input.on('end', function() {
+    for (var writeVal in dict){
+        uuids = dict[writeVal]
+        for (var uuid in uuids)
+          dict[writeVal][uuid] = Array.from(dict[writeVal][uuid])
+    }
+    fs.writeFile(dumpPath+'/'+peripheralId+'.write-response-pair.json',JSON.stringify(dict),
         function (err) {
             if (err) {
                 console.error('Crap happens');
             }
         }
     );
-  });
-
-  input.on('end', function() {
+    console.log("File generated");
     if (remaining.length > 0) {
       func(remaining);
     }
   });
 }
 
-function loadWriteResponsePair(logFile){
-  input = fs.createReadStream(logFile,'utf8');
-  var remaining = '';
-  input.on('data', function(data) {
-    console.log(typeof(data));
-    dict = util.inspect(data);
-    console.log(typeof(dict));
-    console.log(dict);
-  });
+function loadWriteResponsePair(peripheralId){
+  pairFile = dumpPath+'/'+peripheralId+'.write-response-pair.json'
+  if (!fs.existsSync(pairFile)){
+    console.log("generating pairData");
+    logFile = dumpPath+ '/'+peripheralId+'.log.session';
+    console.log(logFile);
+    generateWriteResponsePair(logFile);
+  }
+  rawdata = fs.readFileSync(pairFile);
+  //console.log("rawdata : "+rawdata);
+  dict = JSON.parse(rawdata);
+  //console.log("dict" + dict);
+  return dict;
 }
 
+function getNotifyData(dict, search){
+  uuids = dict[search];
+  return uuids;
+}
+
+module.exports.generateWriteResponsePair = generateWriteResponsePair;
+module.exports.loadWriteResponsePair = loadWriteResponsePair;
+module.exports.getNotifyData = getNotifyData;
 
 module.exports.myRand = myRand;
 module.exports.logToJson = logToJson;
@@ -231,5 +261,4 @@ module.exports.parse = parse;
 module.exports.match_pattern = match_pattern; 
 module.exports.replace = replace;
 module.exports.isCertainData = isCertainData;
-module.exports.generateWriteResponsePair = generateWriteResponsePair;
-module.exports.loadWriteResponsePair = loadWriteResponsePair;
+module.exports.best_match = best_match;

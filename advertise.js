@@ -9,6 +9,8 @@ var hookFunctions = require('./hookFunctions/hooks.js');
 var path=require('path');
 var events = require('events');
 var getopt = require('node-getopt');
+var processData = require('./utilities');
+
 
 var options = new getopt([
   ['a' , 'advertisement=FILE'  , 'advertisement json file'],
@@ -70,6 +72,24 @@ baseAdvFile=path.basename(opt.options.advertisement);
 var peripheralId = baseAdvFile.substring(0, baseAdvFile.indexOf("_"));
 console.log("peripheralid: " + peripheralId)
 
+//var hookFunctions = require('./hookFunctions/'+peripheralId+'.js');
+
+
+var dumpFile = dumpPath + '/' + peripheralId + '.log';
+
+// new session
+// fs.writeFile(dumpFile+".session", "w", function(err){
+//     if(err){
+//       return console.log(err);
+//     }
+//   });
+
+// wirte-response
+var writeResponses = processData.loadWriteResponsePair(peripheralId);
+
+// List of Notified Data 
+var notifyData = JSON.parse(fs.readFileSync(dumpPath+"/"+peripheralId.toString().toLowerCase()+".notify.json", 'utf8'));
+console.log(notifyData);
 
 if (opt.options.advertisement.indexOf('.adv.json') > -1 ) {
   advertisementFile=opt.options.advertisement;
@@ -209,7 +229,13 @@ function dumpLog(type, peripheralId, serviceUuid, uuid, data ){
       if(err) {
           return console.log(err);
         }
-      })  
+      }) 
+      // Log Session Notify
+      // fs.appendFile(dumpFile+".notify.session",data.toString('hex'), function(err){
+      // if(err){
+      //   return console.log(err);
+      // }
+    // }); 
     }
     if (type == "< W"){
       fs.appendFile(writeRecFile, data.toString('hex')+'\n', function(err) {
@@ -218,6 +244,12 @@ function dumpLog(type, peripheralId, serviceUuid, uuid, data ){
         }
       })  
     }
+    // Log Session
+    // fs.appendFile(dumpFile+".session",toSave, function(err){
+    //   if(err){
+    //     return console.log(err);
+    //   }
+    // });
     
 }
 
@@ -309,7 +341,6 @@ wsclient.on('advchange', function(newEir, newScanResponse){
 
 //listen to all notifications, invoke appropriate subscription callbacks
 wsclient.on('notification', function(peripheralId, serviceUuid, uuid, data) {
-
     if (servicesLookup[serviceUuid]) {
       var serviceName = servicesLookup[serviceUuid].name;
       var characteristicName = servicesLookup[serviceUuid].characteristics[uuid].name;      
@@ -317,14 +348,25 @@ wsclient.on('notification', function(peripheralId, serviceUuid, uuid, data) {
 
     console.log('<< Notify: '.green + getServiceNames(serviceUuid,uuid) + ' : ' + data.toString('hex').green.inverse + ' (' + utils.hex2a(data.toString('hex')) + ')');
 //    console.log('forwarding...');
-    
     dumpLog('> N',peripheralId, serviceUuid, uuid, data);
-
     if (hookTable[serviceUuid]) {
       var hook = hookTable[serviceUuid][uuid];
     }
-
     if (hook) {
+        if(hook.ignore){
+          console.log("Ignoring notification value "+' (' + utils.hex2a(data.toString('hex')) + ')');
+          if (utilities.isCertainData(peripheralId, data)){
+            subscriptions[serviceUuid][uuid](data);
+          }else {
+            while(subscriptions[serviceUuid][uuid][0].length>0){
+              replayData = subscriptions[serviceUuid][uuid][0].pop();
+              console.log(getServiceNames(serviceUuid,uuid)+" : "+ replayData.toString() + " ("+utils.hex2a(replayData.toString('hex'))+")");
+              subscriptions[serviceUuid][uuid](replayData.toString('hex'));
+             }
+          }
+          return;
+        }
+        
        if (hook.staticNotifyValue) {
           var data = hook.staticValue;
           console.log('<< Notify static val: '.green + data.toString('hex').green.inverse + ' (' + utils.hex2a(data.toString('hex'))+ ')');
@@ -332,16 +374,17 @@ wsclient.on('notification', function(peripheralId, serviceUuid, uuid, data) {
           //callback(result, new Buffer(data,'hex'));
           subscriptions[serviceUuid][uuid](data);
         } else if (hook.dynamicNotify) {
-          hookFunctions[hook.dynamicNotify](peripheralId, serviceUuid, uuid, 'notify', data , wsclient, function(err, modifiedData){
+          hookFunctions[hook.dynamicNotify](peripheralId, serviceUuid, uuid, 'notify', data , notifyData, wsclient, function(err, modifiedData){
             if (modifiedData) {
-              console.log('<< Notify DATA hook                                                             : '.yellow + modifiedData.toString('hex').yellow.inverse + ' (' + utils.hex2a(modifiedData.toString('hex'))+ ')');
+              console.log('<< Notify DATA hook: '.yellow + modifiedData.toString('hex').yellow.inverse + ' (' + utils.hex2a(modifiedData.toString('hex'))+ ')');
               if (subscriptions[serviceUuid] && subscriptions[serviceUuid][uuid]) {
                   subscriptions[serviceUuid][uuid](modifiedData);
               }
             } else {
               console.log('<< Notify DATA hook: '.yellow + 'intercept, not forwarding'.yellow);
             }
-          })
+          });
+          
         } else {
           //there are hooks, but not for notifications, invoke directly
           subscriptions[serviceUuid][uuid](data);          
@@ -401,7 +444,7 @@ function setServices(services, callback){
           if (!hookTable[serviceToCopy.uuid][characteristicToCopy.uuid]) {
             hookTable[serviceToCopy.uuid][characteristicToCopy.uuid] = characteristicToCopy.hooks;
           }
-          debug("      hooks: " + util.inspect(characteristicToCopy.hooks, {showHidden: false, depth: null}));
+          console.log("      hooks: " + util.inspect(characteristicToCopy.hooks, {showHidden: false, depth: null}));
         }
 
       var mitmcharacteristic = new Characteristic({
@@ -477,11 +520,14 @@ function setServices(services, callback){
                     var peripheralId = this.peripheralId;
                     var serviceUuid = this.serviceUuid;
                     var uuid = this.uuid;
-
-                    console.log('>> Write:  '.blue + getServiceNames(serviceUuid,uuid) + ' : '+ data.toString('hex').blue.inverse + ' (' + utils.hex2a(data.toString('hex'))+')');
+                    var result=this.RESULT_SUCCESS;
+                    var info = getServiceNames(serviceUuid,uuid);
+                    
+                    console.log('>> Write:  '.blue + info + ' : '+ data.toString('hex').blue.inverse + ' (' + utils.hex2a(data.toString('hex'))+')');
                     if (withoutResponse) {
                       dumpLog('< W',peripheralId, serviceUuid, uuid, data);
-                      dumpDSP(peripheralId, data);
+
+                      //dumpDSP(peripheralId, data);
                     } else {
                       dumpLog('< C',peripheralId, serviceUuid, uuid, data);                      
                     }
@@ -491,6 +537,21 @@ function setServices(services, callback){
                     }
 
                     if (hook) {
+                      if(hook.replayNotify){
+                        dict = processData.getNotifyData(writeResponses,data.toString('hex'));
+                        notifyuuid = hook.notifyuuid;
+                        if (dict && dict[notifyuuid]){
+                          subscriptions[serviceUuid][notifyuuid][0] = []
+                            for (var i in dict[notifyuuid]){
+                              ndata = dict[notifyuuid][i]
+                                console.log('<< Replay notify: '.yellow + ndata.toString('hex').yellow.inverse + ' (' + utils.hex2a(ndata.toString('hex'))+ ')');
+                                subscriptions[serviceUuid][notifyuuid][0].push(ndata);
+                              // action = {'type':'read', 'peripheralId':peripheralId,'serviceUuid':serviceUuid,
+                              //           'characteristicUuid':uuid,'data':ndata, 'isNotification':'true'}
+                              // wsclient.sendAction(action);
+                              }
+                            }
+                        }
                      if (hook.staticWrite) {
                           //send the write data to static hook function, do not forward the write to device
                           hookFunctions[hook.staticWrite](peripheralId, serviceUuid, uuid, 'write', data, wsclient, function(error, data){
@@ -580,7 +641,25 @@ function setServices(services, callback){
                 console.log('========== onUnsubscribe');
           }, 
           onNotify: function() {// optional notify sent handler, function() { ...}
-                console.log('========== onNotify');
+                var peripheralId = this.peripheralId;
+                var serviceUuid = this.serviceUuid;
+                var uuid = this.uuid;
+                // console.log('========== onNotify');
+                // console.log("len = "+subscriptions[serviceUuid][uuid][0].length);
+                // while(subscriptions[serviceUuid][uuid][0].length > 0){
+                //   replayData = subscriptions[serviceUuid][uuid][0].pop();
+                //   console.log(getServiceNames(serviceUuid,uuid)+" : "+ utils.hex2a(replayData.toString('hex')));
+                //   subscriptions[serviceUuid][uuid](replayData.toString('hex'));
+                //  }
+
+                // if (hookTable[serviceUuid]) {
+                //   var hook = hookTable[serviceUuid][uuid];
+                //   if (hook) {
+                //     if(hook.replayNotify){
+                //       console.log("<< Notify: ".green+data);
+                //     }
+                //   }
+                // }
           }, 
           onIndicate: function(updateValueCallback) { // optional indicate confirmation received handler, function() { ...}
                  console.log('========== onIndicate');
