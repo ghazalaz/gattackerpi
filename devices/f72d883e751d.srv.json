@@ -1,0 +1,238 @@
+[
+    {
+        "uuid": "1800",
+        "name": "Generic Access",
+        "type": "org.bluetooth.service.generic_access",
+        "startHandle": 1,
+        "endHandle": 9,
+        "characteristics": [
+            {
+                "uuid": "2a00",
+                "name": "Device Name",
+                "properties": [
+                    "read",
+                    "write"
+                ],
+                "value": "44756f454b2032383731",
+                "descriptors": [],
+                "startHandle": 2,
+                "valueHandle": 3,
+                "asciiValue": "DuoEK 2871"
+            },
+            {
+                "uuid": "2a01",
+                "name": "Appearance",
+                "properties": [
+                    "read"
+                ],
+                "value": "4103",
+                "descriptors": [],
+                "startHandle": 4,
+                "valueHandle": 5,
+                "asciiValue": "A "
+            },
+            {
+                "uuid": "2a04",
+                "name": "Peripheral Preferred Connection Parameters",
+                "properties": [
+                    "read"
+                ],
+                "value": "0600300004009001",
+                "descriptors": [],
+                "startHandle": 6,
+                "valueHandle": 7,
+                "asciiValue": "  0     "
+            },
+            {
+                "uuid": "2aa6",
+                "name": "Central Address Resolution",
+                "properties": [
+                    "read"
+                ],
+                "value": "01",
+                "descriptors": [],
+                "startHandle": 8,
+                "valueHandle": 9,
+                "asciiValue": " "
+            }
+        ]
+    },
+    {
+        "uuid": "1801",
+        "name": "Generic Attribute",
+        "type": "org.bluetooth.service.generic_attribute",
+        "startHandle": 10,
+        "endHandle": 13,
+        "characteristics": [
+            {
+                "uuid": "2a05",
+                "name": "Service Changed",
+                "properties": [
+                    "indicate"
+                ],
+                "value": "",
+                "descriptors": [
+                    {
+                        "handle": 13,
+                        "uuid": "2902",
+                        "value": ""
+                    }
+                ],
+                "startHandle": 11,
+                "valueHandle": 12
+            }
+        ]
+    },
+    {
+        "uuid": "180d",
+        "name": "Heart Rate",
+        "type": "org.bluetooth.service.heart_rate",
+        "startHandle": 14,
+        "endHandle": 19,
+        "characteristics": [
+            {
+                "uuid": "2a37",
+                "name": "Heart Rate Measurement",
+                "properties": [
+                    "notify"
+                ],
+                "value": "",
+                "descriptors": [
+                    {
+                        "handle": 17,
+                        "uuid": "2902",
+                        "value": ""
+                    }
+                ],
+                "startHandle": 15,
+                "valueHandle": 16
+            },
+            {
+                "uuid": "2a38",
+                "name": "Body Sensor Location",
+                "properties": [
+                    "read"
+                ],
+                "value": "01",
+                "descriptors": [],
+                "startHandle": 18,
+                "valueHandle": 19,
+                "asciiValue": " "
+            }
+        ]
+    },
+    {
+        "uuid": "fe59",
+        "name": null,
+        "type": null,
+        "startHandle": 20,
+        "endHandle": 23,
+        "characteristics": [
+            {
+                "uuid": "8ec90003f3154f609fb8838830daea50",
+                "name": null,
+                "properties": [
+                    "write",
+                    "indicate"
+                ],
+                "value": "",
+                "descriptors": [
+                    {
+                        "handle": 23,
+                        "uuid": "2902",
+                        "value": ""
+                    }
+                ],
+                "startHandle": 21,
+                "valueHandle": 22
+            }
+        ]
+    },
+    {
+        "uuid": "180f",
+        "name": "Battery Service",
+        "type": "org.bluetooth.service.battery_service",
+        "startHandle": 24,
+        "endHandle": 27,
+        "characteristics": [
+            {
+                "uuid": "2a19",
+                "name": "Battery Level",
+                "properties": [
+                    "read",
+                    "notify"
+                ],
+                "value": "62",
+                "descriptors": [
+                    {
+                        "handle": 27,
+                        "uuid": "2902",
+                        "value": ""
+                    }
+                ],
+                "startHandle": 25,
+                "valueHandle": 26,
+                "asciiValue": "b"
+            }
+        ]
+    },
+    {
+        "uuid": "180a",
+        "name": "Device Information",
+        "type": "org.bluetooth.service.device_information",
+        "startHandle": 28,
+        "endHandle": 30,
+        "characteristics": [
+            {
+                "uuid": "2a29",
+                "name": "Manufacturer Name String",
+                "properties": [
+                    "read"
+                ],
+                "value": "436f2e2c4c74642e",
+                "descriptors": [],
+                "startHandle": 29,
+                "valueHandle": 30,
+                "asciiValue": "Co.,Ltd."
+            }
+        ]
+    },
+    {
+        "uuid": "14839ac47d7e415c9a42167340cf2339",
+        "name": null,
+        "type": null,
+        "startHandle": 31,
+        "endHandle": 65535,
+        "characteristics": [
+            {
+                "uuid": "8b00ace7eb0b49b0bbe99aee0a26e1a3",
+                "name": null,
+                "properties": [
+                    "writeWithoutResponse",
+                    "write"
+                ],
+                "value": "",
+                "descriptors": [],
+                "startHandle": 32,
+                "valueHandle": 33
+            },
+            {
+                "uuid": "0734594aa8e74b1aa6b1cd5243059a57",
+                "name": null,
+                "properties": [
+                    "notify"
+                ],
+                "value": "",
+                "descriptors": [
+                    {
+                        "handle": 36,
+                        "uuid": "2902",
+                        "value": ""
+                    }
+                ],
+                "startHandle": 34,
+                "valueHandle": 35
+            }
+        ]
+    }
+]
